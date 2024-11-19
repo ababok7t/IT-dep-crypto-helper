@@ -22,13 +22,17 @@ func getCoinInfo(id string) (Coin, error) {
 	var coin []Coin
 
 	response, responseError := http.Get(fmt.Sprint("https://api.coinlore.net/api/ticker/?id=", id))
+
 	if responseError != nil {
 		return Coin{}, responseError
 	}
+
 	defer response.Body.Close()
 
 	byteSlice := make([]byte, 1024)
+
 	n, _ := response.Body.Read(byteSlice)
+
 	json.Unmarshal(byteSlice[:n], &coin)
 
 	return coin[0], nil
@@ -36,11 +40,13 @@ func getCoinInfo(id string) (Coin, error) {
 
 func getCoinForecast(id string) (string, error) {
 	coin, gettingError := getCoinInfo(id)
+
 	if gettingError != nil {
 		return "", gettingError
 	}
 
 	priceNow, _ := strconv.ParseFloat(coin.PriceUsd, 64)
+
 	change1H, _ := strconv.ParseFloat(coin.PercentChange1H, 64)
 	change24H, _ := strconv.ParseFloat(coin.PercentChange24H, 64)
 	change7D, _ := strconv.ParseFloat(coin.PercentChange7D, 64)
@@ -62,12 +68,10 @@ func getCoinForecast(id string) (string, error) {
 	volatility := math.Sqrt((vol1 + vol2 + vol3) / 3)
 
 	coinForecast := priceNow*math.Exp(midProfit-1/2*math.Pow(volatility, 2)) + volatility*0.0000001
+
 	return fmt.Sprintf("%.10f", coinForecast), nil
 }
 
 func main() {
-	btc, err1 := getCoinInfo("90")
-	fmt.Println(btc, err1)
-	forecast, err2 := getCoinForecast("90")
-	fmt.Println(forecast, err2)
+
 }
