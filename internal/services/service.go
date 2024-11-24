@@ -1,82 +1,46 @@
 package services
 
 import (
+	"crypto-helper/internal/domain"
 	"crypto-helper/internal/infra/cache"
-	"encoding/json"
+	"crypto-helper/internal/infra/external/coinloreApi"
 	"errors"
 	"fmt"
 	"math"
-	"net/http"
 	"strconv"
 	"time"
 )
 
-type Data struct {
-	Coins []Coin `json:"data"`
+type Service struct {
+	*cache.Cache
+	coinloreApi.Client
 }
 
-type Coin struct {
-	Id               string `json:"id"`
-	Symbol           string `json:"symbol"`
-	Name             string `json:"name"`
-	PriceUsd         string `json:"price_usd"`
-	PercentChange24H string `json:"percent_change_24h"`
-	PercentChange1H  string `json:"percent_change_1h"`
-	PercentChange7D  string `json:"percent_change_7d"`
-}
-
-func GetCoinsInfo() ([]Coin, error) {
-	var data Data
-
-	response, responseError := http.Get("https://api.coinlore.net/api/tickers/?start=0&limit=10")
-
-	if responseError != nil {
-		return []Coin{}, responseError
-	}
-
-	defer response.Body.Close()
-
-	byteSlice := make([]byte, 102400)
-
-	n, _ := response.Body.Read(byteSlice)
-
-	unmarshallingError := json.Unmarshal(byteSlice[:n], &data)
-
-	if unmarshallingError != nil {
-		return []Coin{}, unmarshallingError
-	}
-
-	coins := data.Coins
-
-	return coins, nil
-}
-
-func UpdateCoinsInfo(cache *cache.Cache) error {
-	coins, getError := GetCoinsInfo()
-
+func (s *Service) UpdateCoinsInfo() error {
+	coins, getError := s.Client.GetCoinsInfo()
 	if getError != nil {
 		return getError
 	}
 
 	for _, coin := range coins {
-		cache.Set(coin.Symbol, coin, 30*time.Second)
+		s.Cache.Set(coin.Symbol, coin, 30*time.Second)
 	}
 
 	return nil
 }
 
-func GetCoinInfo(symbol string, cache *cache.Cache) (Coin, error) {
-	value, isFound := cache.Get(symbol)
+func (s *Service) GetCoinInfo(symbol string) (domain.Coin, error) {
+	value, isFound := s.Cache.Get(symbol)
 
 	if !isFound {
-		return Coin{}, errors.New("coin not found")
+		return domain.Coin{}, errors.New("coin not found")
 	}
-	coin := value.(Coin)
+	coin := value.(domain.Coin)
 	return coin, nil
 }
 
-func GetCoinForecast(symbol string, cache *cache.Cache) (string, error) {
-	coin, err := GetCoinInfo(symbol, cache)
+func (s *Service) GetCoinForecast(symbol string) (string, error) {
+	coin, err := s.GetCoinInfo(symbol)
 
 	if err != nil {
 		return "", err
