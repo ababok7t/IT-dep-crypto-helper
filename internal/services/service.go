@@ -14,6 +14,7 @@ import (
 type Service struct {
 	*cache.Cache
 	coinloreApi.Client
+	Users []domain.User
 }
 
 func (s *Service) UpdateCoinsInfo() error {
