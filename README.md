@@ -1,2 +1,3 @@
 # IT-dep-crypto-helper
-crypto helper in telegram
+telegram bot that can simplify your investment expirience
+@ITdepCryptoHelperBot
