@@ -49,7 +49,7 @@ func (s *Service) RemovePriceAlert(userId string, coinSymbol string) {
 	s.UsersCache.DeletePriceAlert(userId, coinSymbol)
 }
 
-func (s *Service) UpdateAlertsStatus() {
+func (s *Service) UpdateAlertsStatus() []domain.PriceAlert {
 
 	var activeAlerts []domain.PriceAlert
 
@@ -58,27 +58,25 @@ func (s *Service) UpdateAlertsStatus() {
 
 			priceAtMoment, priceParseErr := strconv.ParseFloat(priceAlert.PriceAtMoment, 64)
 			if priceParseErr != nil {
-				return
+				return []domain.PriceAlert{}
 			}
 
 			stopLimit, stopLimitParseErr := strconv.ParseFloat(priceAlert.StopLimit, 64)
 			if stopLimitParseErr != nil {
-				return
+				return []domain.PriceAlert{}
 			}
 
-			if priceAtMoment >= stopLimit && priceAlert.Status == "up" {
+			if (priceAtMoment >= stopLimit && priceAlert.Status == "up") || (priceAtMoment <= stopLimit && priceAlert.Status == "down") {
 				activeAlerts = append(activeAlerts, priceAlert)
-				priceAlert.Status = "done"
-			}
 
-			if priceAtMoment <= stopLimit && priceAlert.Status == "down" {
-				activeAlerts = append(activeAlerts, priceAlert)
 				priceAlert.Status = "done"
-			}
 
-			s.UsersCache.SetPriceAlert(id, priceAlert, time.Minute)
+				s.UsersCache.SetPriceAlert(id, priceAlert, time.Minute)
+			}
 		}
 	}
+
+	return activeAlerts
 }
 
 func (s *Service) AddCollectionItem(userId string, coinSymbol string) {
