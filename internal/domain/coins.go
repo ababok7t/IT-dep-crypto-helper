@@ -13,15 +13,3 @@ type Coin struct {
 type Coins struct {
 	Coins []Coin `json:"data"`
 }
-
-type User struct {
-	UserId          string
-	PriceAlertsList []PriceAlert
-}
-
-type PriceAlert struct {
-	Symbol        string
-	PriceAtMoment string
-	StopLimit     string
-	status        string
-}
