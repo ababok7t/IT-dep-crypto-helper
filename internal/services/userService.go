@@ -71,7 +71,7 @@ func (s *Service) UpdateAlertsStatus() []domain.PriceAlert {
 
 				priceAlert.Status = "done"
 
-				s.UsersCache.SetPriceAlert(id, priceAlert, time.Minute)
+				s.UsersCache.SetPriceAlert(id, priceAlert, time.Second*15)
 			}
 		}
 	}
