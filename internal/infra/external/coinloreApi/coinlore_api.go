@@ -11,7 +11,7 @@ type Client struct{}
 func (c *Client) GetCoinsInfo() (map[string]domain.Coin, error) {
 	var data domain.Coins
 
-	response, responseError := http.Get("https://api.coinlore.net/api/tickers/?start=0&limit=20")
+	response, responseError := http.Get("https://api.coinlore.net/api/tickers/?start=0&limit=14")
 
 	if responseError != nil {
 		return map[string]domain.Coin{}, responseError

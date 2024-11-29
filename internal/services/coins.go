@@ -19,6 +19,21 @@ func (s *Service) UpdateCoinsInfo() error {
 	return nil
 }
 
+func (s *Service) GetCoinsSymbols() ([]string, error) {
+	coins, isOK := s.CoinsCache.GetCoins()
+
+	if !isOK {
+		return nil, errors.New("coin cache is empty")
+	}
+
+	var symbols []string
+	for _, coin := range coins {
+		symbols = append(symbols, coin.Symbol)
+	}
+
+	return symbols, nil
+}
+
 func (s *Service) GetCoinInfo(symbol string) (domain.Coin, error) {
 	coins, isFound := s.CoinsCache.GetCoins()
 
