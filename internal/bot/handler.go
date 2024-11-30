@@ -48,7 +48,7 @@ func (h *Handler) handleMessage(message *tgbotapi.Message) tgbotapi.MessageConfi
 
 	case StateMain:
 		reply = "Crypto Helper Bot\nВаш помощник в мире криптовалютных инвестиций"
-		messageConfig := h.setInlineKeyboard(message.Chat.ID, reply, []string{"перейти к списку монет"})
+		messageConfig := h.setInlineKeyboard(message.Chat.ID, reply, []string{"перейти к списку монет", "перейти в избранное"})
 		return messageConfig
 
 	case StateCoinsList:
@@ -77,7 +77,6 @@ func (h *Handler) handleMessage(message *tgbotapi.Message) tgbotapi.MessageConfi
 		messageConfig := h.setInlineKeyboard(message.Chat.ID, reply, []string{"назад"})
 
 		return messageConfig
-
 	default:
 		return tgbotapi.NewMessage(message.Chat.ID, "")
 	}
@@ -86,14 +85,13 @@ func (h *Handler) handleMessage(message *tgbotapi.Message) tgbotapi.MessageConfi
 
 func (h *Handler) handleCallbackQuery(callback *tgbotapi.CallbackQuery) tgbotapi.MessageConfig {
 	state := h.stateMachine.SetState(callback.Data)
+	fmt.Println(callback.Message)
 
 	var reply string
-
 	switch state {
-
 	case StateMain:
 		reply = "Crypto Helper Bot\nВаш помощник в мире криптовалютных инвестиций"
-		messageConfig := h.setInlineKeyboard(callback.Message.Chat.ID, reply, []string{"перейти к списку монет"})
+		messageConfig := h.setInlineKeyboard(callback.Message.Chat.ID, reply, []string{"перейти к списку монет", "избранное"})
 		return messageConfig
 
 	case StateCoinsList:
@@ -117,15 +115,47 @@ func (h *Handler) handleCallbackQuery(callback *tgbotapi.CallbackQuery) tgbotapi
 			return tgbotapi.NewMessage(callback.Message.Chat.ID, "ошибка получения данных")
 		}
 
-		reply := fmt.Sprintf("информация о криптовалюте %s:\nназвание: %s\nцена: %s$\nизменение цены за 1 час: %s\nизменение цены за 24 часа: %s\nизменение цены за 7 дней: %s\n", coinSymbol, coinInfo.Name, coinInfo.PriceUsd, coinInfo.PercentChange1H, coinInfo.PercentChange24H, coinInfo.PercentChange7D)
+		coinForecast, forecastError := h.service.GetCoinForecast(coinSymbol)
+		if forecastError != nil {
+			log.Println(forecastError)
+			return tgbotapi.NewMessage(callback.Message.Chat.ID, "ошибка получения данных")
+		}
 
-		messageConfig := h.setInlineKeyboard(callback.Message.Chat.ID, reply, []string{"назад"})
+		pr := "%"
+		reply := fmt.Sprintf("информация о криптовалюте %s:\nназвание: %s\nцена: %s$\nизменение цены за 1 час: %s %s\nизменение цены за 24 часа: %s %s\nизменение цены за 7 дней: %s %s\nпрогноз: %s $", coinSymbol, coinInfo.Name, coinInfo.PriceUsd, coinInfo.PercentChange1H, pr, coinInfo.PercentChange24H, pr, coinInfo.PercentChange7D, pr, coinForecast)
+		var buttonsMap map[string]string
+		buttonsMap = make(map[string]string)
+		buttonsMap["добавить в избранное"] = callback.Data
+		buttonsMap["установить alert"] = callback.Data
+		buttonsMap["назад"] = "назад"
+
+		messageConfig := h.setCoinInfoKeyboard(callback.Message.Chat.ID, reply, buttonsMap)
 
 		return messageConfig
 
+	case StateCollection:
+		reply = "ваши избранные монеты:\n"
+
+		id := fmt.Sprint(callback.Message.Chat.ID)
+		collection := h.service.GetCollection(id)
+		var coinSymbols []string
+		for _, coin := range collection {
+			coinSymbols = append(coinSymbols, coin.Symbol)
+		}
+
+		messageConfig := h.setCoinsKeyboard(callback.Message.Chat.ID, reply, coinSymbols)
+		return messageConfig
+
+	case StateSetCollection:
+		reply = fmt.Sprintf("Монета добавлена в избранное")
+
+		id := fmt.Sprint(callback.Message.Chat.ID)
+		h.service.SetCollectionItem(id, callback.Data)
+		return h.setInlineKeyboard(callback.Message.Chat.ID, reply, []string{"далее"})
 	default:
 		return tgbotapi.NewMessage(callback.Message.Chat.ID, "")
 	}
+
 }
 
 func (h *Handler) setInlineKeyboard(chatId int64, text string, buttons []string) tgbotapi.MessageConfig {
@@ -158,6 +188,23 @@ func (h *Handler) setCoinsKeyboard(chatId int64, text string, buttons []string) 
 		inlineButtons = append(inlineButtons, row)
 	}
 
+	inlineButtons = append(inlineButtons, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("назад", "назад")))
+
+	inlineKeyboard := tgbotapi.NewInlineKeyboardMarkup(inlineButtons...)
+	message := tgbotapi.NewMessage(chatId, text)
+	message.ReplyMarkup = inlineKeyboard
+	return message
+}
+
+func (h *Handler) setCoinInfoKeyboard(chatId int64, text string, buttons map[string]string) tgbotapi.MessageConfig {
+	var inlineButtons [][]tgbotapi.InlineKeyboardButton
+
+	//for key, value := range buttons {
+	//	inlineButtons = append(inlineButtons, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData(key, value)))
+	//}
+
+	inlineButtons = append(inlineButtons, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("добавить в избранное", buttons["добавить в избранное"])))
+	inlineButtons = append(inlineButtons, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("установить alert", buttons["установить alert"])))
 	inlineButtons = append(inlineButtons, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("назад", "назад")))
 
 	inlineKeyboard := tgbotapi.NewInlineKeyboardMarkup(inlineButtons...)

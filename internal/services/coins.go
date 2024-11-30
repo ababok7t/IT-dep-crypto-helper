@@ -68,7 +68,7 @@ func (s *Service) GetCoinForecast(symbol string) (string, error) {
 
 	volatility := math.Sqrt((vol1 + vol2 + vol3) / 3)
 
-	coinForecast := priceNow*math.Exp(midProfit-1/2*math.Pow(volatility, 2)) + volatility*0.0000001
+	coinForecast := priceNow*math.Exp(midProfit-0.5*math.Pow(volatility, 2)) + volatility*0.0000001
 
 	return fmt.Sprintf("%.10f", coinForecast), nil
 }
