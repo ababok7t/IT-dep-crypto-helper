@@ -1,6 +1,7 @@
 package services
 
 import (
+	"crypto-helper/internal/domain"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
@@ -69,20 +70,24 @@ func (s *Service) HandleCallbackQuery(callback *tgbotapi.CallbackQuery, currentC
 		}
 
 		pr := "%"
-		reply := fmt.Sprintf("информация о криптовалюте %s:\nназвание: %s\nцена: %s$\nизменение цены за 1 час: %s %s\nизменение цены за 24 часа: %s %s\nизменение цены за 7 дней: %s %s\nпрогноз: %s $", coinSymbol, coinInfo.Name, coinInfo.PriceUsd, coinInfo.PercentChange1H, pr, coinInfo.PercentChange24H, pr, coinInfo.PercentChange7D, pr, coinForecast)
+		reply := domain.MakeCoinReply(coinSymbol, coinInfo, coinForecast, pr)
+
 		var buttonsMap map[string]string
 		buttonsMap = make(map[string]string)
 		id := fmt.Sprint(callback.Message.From.ID)
 		flag := 0
 		for _, coin := range s.GetCollection(id) {
 			if callback.Data == coin.Symbol {
-				buttonsMap["удалить из избраного"] = "$" + callback.Data
 				flag = 1
 			}
 		}
 
 		if flag == 0 {
 			buttonsMap["добавить в избранное"] = "@" + callback.Data
+		}
+
+		if flag == 1 {
+			buttonsMap["удалить из избранного"] = "-" + callback.Data
 		}
 
 		buttonsMap["установить alert"] = callback.Data
@@ -116,7 +121,7 @@ func (s *Service) HandleCallbackQuery(callback *tgbotapi.CallbackQuery, currentC
 		reply = fmt.Sprintf("Монета удалена из избранного")
 
 		id := fmt.Sprint(callback.Message.From.ID)
-		s.SetCollectionItem(id, callback.Data[1:])
+		s.RemoveCollectionItem(id, callback.Data[1:])
 		return s.setInlineKeyboard(callback.Message.Chat.ID, reply, []string{"далее"})
 
 	case StateAlert:

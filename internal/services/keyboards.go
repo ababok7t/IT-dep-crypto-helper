@@ -47,7 +47,13 @@ func (s *Service) setCoinInfoKeyboard(chatId int64, text string, buttons map[str
 	//	inlineButtons = append(inlineButtons, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData(key, value)))
 	//}
 
-	inlineButtons = append(inlineButtons, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("добавить в избранное", buttons["добавить в избранное"])))
+	_, err := buttons["добавить в избранное"]
+	if err {
+		inlineButtons = append(inlineButtons, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("добавить в избранное", buttons["добавить в избранное"])))
+	} else {
+		inlineButtons = append(inlineButtons, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("удалить из избранного", buttons["удалить из избранного"])))
+	}
+
 	inlineButtons = append(inlineButtons, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("установить alert", buttons["установить alert"])))
 	inlineButtons = append(inlineButtons, tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData("назад", "назад")))
 
