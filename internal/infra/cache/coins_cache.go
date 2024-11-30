@@ -6,7 +6,7 @@ import (
 )
 
 type CoinsCache struct {
-	sync.RWMutex
+	sync.RWMutex //mtx// //расширяем чтобы запихнуть//
 	coins        map[string]domain.Coin
 	coinsSymbols []string
 }
