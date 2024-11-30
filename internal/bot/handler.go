@@ -134,7 +134,19 @@ func (h *Handler) handleCallbackQuery(callback *tgbotapi.CallbackQuery, currentC
 		reply := fmt.Sprintf("информация о криптовалюте %s:\nназвание: %s\nцена: %s$\nизменение цены за 1 час: %s %s\nизменение цены за 24 часа: %s %s\nизменение цены за 7 дней: %s %s\nпрогноз: %s $", coinSymbol, coinInfo.Name, coinInfo.PriceUsd, coinInfo.PercentChange1H, pr, coinInfo.PercentChange24H, pr, coinInfo.PercentChange7D, pr, coinForecast)
 		var buttonsMap map[string]string
 		buttonsMap = make(map[string]string)
-		buttonsMap["добавить в избранное"] = "@" + callback.Data
+		id := fmt.Sprint(callback.Message.From.ID)
+		flag := 0
+		for _, coin := range h.service.GetCollection(id) {
+			if callback.Data == coin.Symbol {
+				buttonsMap["удалить из избраного"] = "$" + callback.Data
+				flag = 1
+			}
+		}
+
+		if flag == 0 {
+			buttonsMap["добавить в избранное"] = "@" + callback.Data
+		}
+
 		buttonsMap["установить alert"] = callback.Data
 		buttonsMap["назад"] = "назад"
 

@@ -43,6 +43,8 @@ func (sm *StateMachine) SetState(message string) string {
 		} else {
 			if string(message[0]) == "@" {
 				sm.currentState = StateSetCollection
+			} else if string(message[0]) == "$" {
+				sm.currentState = StateRemoveCollection
 			} else {
 				sm.currentState = StateAlert
 			}
