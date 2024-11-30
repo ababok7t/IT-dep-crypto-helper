@@ -5,6 +5,7 @@ WORKDIR /app
 
 # Копируем go.mod и go.sum и загружаем зависимости
 COPY ../../go.* .
+COPY . .
 RUN go mod download
 
 # Копируем исходный код

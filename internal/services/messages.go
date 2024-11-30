@@ -12,6 +12,10 @@ func (s *Service) HandleMessage(message tgbotapi.Message, currentCoin *string) t
 	var reply string
 
 	switch state {
+	case StateMain:
+		reply = "Crypto Helper Bot\nВаш помощник в мире криптовалютных инвестиций"
+		messageConfig := s.setInlineKeyboard(message.Chat.ID, reply, []string{"перейти к списку монет", "избранное"})
+		return messageConfig
 
 	case StateSetAlert:
 		reply = fmt.Sprintf("Монета теперь отслеживается")

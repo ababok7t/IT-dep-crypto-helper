@@ -1,0 +1,9 @@
+services:
+  my-go-app:
+    build:
+      #context: ../
+      dockerfile: ./cmd/app/Dockerfile
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
