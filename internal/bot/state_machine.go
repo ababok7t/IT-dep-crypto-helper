@@ -6,6 +6,7 @@ const (
 	StateCoinInfo      string = "COIN_INFO"
 	StateSetAlert      string = "SET_ALERT"
 	StateSetCollection string = "SET_COLLECTION"
+	StateCollection     string = "COLLECTION"
 )
 
 type StateMachine struct {
@@ -36,6 +37,18 @@ func (sm *StateMachine) SetState(message string) string {
 		if message == "назад" {
 			sm.currentState = StateCoinsList
 		}
+
+	case StateSetAlert:
+		if
+
+	case StateSetCollection:
+
+
+
+	case StateCollection:
+
+
+
 	}
 
 	return sm.currentState
