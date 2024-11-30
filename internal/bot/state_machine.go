@@ -6,7 +6,7 @@ const (
 	StateCoinInfo      string = "COIN_INFO"
 	StateSetAlert      string = "SET_ALERT"
 	StateSetCollection string = "SET_COLLECTION"
-	StateCollection     string = "COLLECTION"
+	StateCollection    string = "COLLECTION"
 )
 
 type StateMachine struct {
@@ -18,12 +18,14 @@ func NewStateMachine() *StateMachine {
 }
 
 func (sm *StateMachine) SetState(message string) string {
-
 	switch sm.currentState {
-
 	case StateMain:
 		if message == "перейти к списку монет" {
 			sm.currentState = StateCoinsList
+		}
+
+		if message == "избранное" {
+			sm.currentState = StateCollection
 		}
 
 	case StateCoinsList:
@@ -36,19 +38,28 @@ func (sm *StateMachine) SetState(message string) string {
 	case StateCoinInfo:
 		if message == "назад" {
 			sm.currentState = StateCoinsList
+		} else if message == "установить alert" {
+			sm.currentState = StateSetAlert
+		} else {
+			sm.currentState = StateSetCollection
 		}
 
 	case StateSetAlert:
-		if
+		if message == "назад" {
+			sm.currentState = StateCoinInfo
+		}
 
 	case StateSetCollection:
-
-
+		if message == "далее" {
+			sm.currentState = StateCoinsList
+		}
 
 	case StateCollection:
-
-
-
+		if message == "назад" {
+			sm.currentState = StateMain
+		} else {
+			sm.currentState = StateCoinInfo
+		}
 	}
 	return sm.currentState
 }

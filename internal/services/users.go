@@ -100,3 +100,12 @@ func (s *Service) RemoveCollectionItem(userId string, coinSymbol string) {
 func (s *Service) GetCollection(userId string) []domain.Coin {
 	return s.UsersCache.GetAllCollectionItems(userId)
 }
+
+func (s *Service) SetCollectionItem(userId string, coinSymbol string) {
+	coin, err := s.GetCoinInfo(coinSymbol)
+	if err != nil {
+		return
+	}
+
+	s.UsersCache.SetCollectionItem(userId, coin)
+}
