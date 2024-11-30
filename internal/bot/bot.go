@@ -47,7 +47,7 @@ func (b *Bot) Start() {
 		}
 
 		if update.CallbackQuery != nil {
-			log.Printf("[%s] %s", update.CallbackQuery.From.UserName, update.CallbackQuery.Data)
+			log.Printf("[%s] %s", update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Data)
 
 			messageConfig := b.handler.HandleUpdate(update)
 			_, sendingError := b.api.Send(messageConfig)

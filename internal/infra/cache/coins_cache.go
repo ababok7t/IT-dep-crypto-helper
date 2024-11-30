@@ -7,7 +7,8 @@ import (
 
 type CoinsCache struct {
 	sync.RWMutex
-	coins map[string]domain.Coin
+	coins        map[string]domain.Coin
+	coinsSymbols []string
 }
 
 func NewCoinsCache() *CoinsCache {
@@ -18,22 +19,23 @@ func NewCoinsCache() *CoinsCache {
 
 }
 
-func (c *CoinsCache) SetCoins(value map[string]domain.Coin) {
+func (c *CoinsCache) SetCoins(coins map[string]domain.Coin, coinsSymbols []string) {
 
 	c.Lock()
 	defer c.Unlock()
 
-	c.coins = value
+	c.coins = coins
+	c.coinsSymbols = coinsSymbols
 }
 
-func (c *CoinsCache) GetCoins() (map[string]domain.Coin, bool) {
+func (c *CoinsCache) GetCoins() (map[string]domain.Coin, []string, bool) {
 
 	c.RLock()
 	defer c.RUnlock()
 
 	if c.coins == nil {
-		return nil, false
+		return nil, nil, false
 	}
 
-	return c.coins, true
+	return c.coins, c.coinsSymbols, true
 }
