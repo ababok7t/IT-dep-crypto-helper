@@ -162,6 +162,13 @@ func (h *Handler) handleCallbackQuery(callback *tgbotapi.CallbackQuery, currentC
 		h.service.SetCollectionItem(id, callback.Data[1:])
 		return h.setInlineKeyboard(callback.Message.Chat.ID, reply, []string{"далее"})
 
+	case StateRemoveCollection:
+		reply = fmt.Sprintf("Монета удалена из избранного")
+
+		id := fmt.Sprint(callback.Message.From.ID)
+		h.service.SetCollectionItem(id, callback.Data[1:])
+		return h.setInlineKeyboard(callback.Message.Chat.ID, reply, []string{"далее"})
+
 	case StateAlert:
 		currentCoin := callback.Data
 		reply = fmt.Sprintf("Введите значение %s:", currentCoin)

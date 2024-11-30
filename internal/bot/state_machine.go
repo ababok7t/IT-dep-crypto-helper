@@ -1,13 +1,14 @@
 package bot
 
 const (
-	StateMain          string = "MAIN"
-	StateCoinsList     string = "COINS_LIST"
-	StateCoinInfo      string = "COIN_INFO"
-	StateSetAlert      string = "SET_ALERT"
-	StateAlert         string = "ALERT"
-	StateSetCollection string = "SET_COLLECTION"
-	StateCollection    string = "COLLECTION"
+	StateMain             string = "MAIN"
+	StateCoinsList        string = "COINS_LIST"
+	StateCoinInfo         string = "COIN_INFO"
+	StateSetAlert         string = "SET_ALERT"
+	StateAlert            string = "ALERT"
+	StateSetCollection    string = "SET_COLLECTION"
+	StateRemoveCollection string = "REMOVE_COLLECTION"
+	StateCollection       string = "COLLECTION"
 )
 
 type StateMachine struct {

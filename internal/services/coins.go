@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"time"
 )
 
 func (s *Service) UpdateCoinsInfo() error {
@@ -17,6 +18,17 @@ func (s *Service) UpdateCoinsInfo() error {
 	s.CoinsCache.SetCoins(coins, coinSymbols)
 
 	return nil
+}
+func (s *Service) StartUpdatingCoinsInfo() {
+	updateTicker := time.NewTicker(time.Second * 30)
+	go func() {
+		for {
+			select {
+			case <-updateTicker.C:
+				_ = s.UpdateCoinsInfo()
+			}
+		}
+	}()
 }
 
 func (s *Service) GetCoinsSymbols() ([]string, error) {
