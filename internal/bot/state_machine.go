@@ -50,6 +50,5 @@ func (sm *StateMachine) SetState(message string) string {
 
 
 	}
-
 	return sm.currentState
 }
