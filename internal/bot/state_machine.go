@@ -37,6 +37,5 @@ func (sm *StateMachine) SetState(message string) string {
 			sm.currentState = StateCoinsList
 		}
 	}
-
 	return sm.currentState
 }
