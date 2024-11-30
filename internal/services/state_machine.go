@@ -1,4 +1,4 @@
-package bot
+package services
 
 const (
 	StateMain             string = "MAIN"
