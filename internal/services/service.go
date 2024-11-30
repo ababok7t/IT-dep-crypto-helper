@@ -6,7 +6,8 @@ import (
 )
 
 type Service struct {
-	CoinsCache *cache.CoinsCache
-	UsersCache *cache.UsersCache
-	Client     *coinloreApi.Client
+	CoinsCache   *cache.CoinsCache
+	UsersCache   *cache.UsersCache
+	Client       *coinloreApi.Client
+	StateMachine *StateMachine
 }

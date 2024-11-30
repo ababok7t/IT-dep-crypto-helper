@@ -1,7 +1,7 @@
 package main
 
 import (
-	"crypto-helper/internal/bot"
+	"crypto-helper/internal/handler"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
@@ -15,7 +15,7 @@ func main() {
 
 	token := os.Getenv("TELEGRAM_BOT_TOKEN")
 
-	telegramBot, creatingBotError := bot.NewBot(token)
+	telegramBot, creatingBotError := handler.NewBot(token)
 	if creatingBotError != nil {
 		log.Fatalf("Error creating bot: %s", creatingBotError)
 	}
