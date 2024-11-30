@@ -5,6 +5,7 @@ const (
 	StateCoinsList     string = "COINS_LIST"
 	StateCoinInfo      string = "COIN_INFO"
 	StateSetAlert      string = "SET_ALERT"
+	StateAlert         string = "ALERT"
 	StateSetCollection string = "SET_COLLECTION"
 	StateCollection    string = "COLLECTION"
 )
@@ -38,15 +39,24 @@ func (sm *StateMachine) SetState(message string) string {
 	case StateCoinInfo:
 		if message == "назад" {
 			sm.currentState = StateCoinsList
-		} else if message == "установить alert" {
-			sm.currentState = StateSetAlert
 		} else {
-			sm.currentState = StateSetCollection
+			if string(message[0]) == "@" {
+				sm.currentState = StateSetCollection
+			} else {
+				sm.currentState = StateAlert
+			}
+		}
+
+	case StateAlert:
+		if message != "" {
+			sm.currentState = StateSetAlert
 		}
 
 	case StateSetAlert:
-		if message == "назад" {
-			sm.currentState = StateCoinInfo
+		{
+			if message == "далее" {
+				sm.currentState = StateCoinsList
+			}
 		}
 
 	case StateSetCollection:
