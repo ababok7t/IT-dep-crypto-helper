@@ -24,6 +24,10 @@ func NewBot(token string) (*Bot, error) {
 func (b *Bot) Start() {
 	log.Printf("Authorized on account %s", b.api.Self.UserName)
 
+	updatingError := b.handler.service.UpdateCoinsInfo()
+	if updatingError != nil {
+		log.Printf("Error updating coins info: %s", updatingError.Error())
+	}
 	b.handler.service.StartUpdatingCoinsInfo()
 
 	u := tgbotapi.NewUpdate(0)
