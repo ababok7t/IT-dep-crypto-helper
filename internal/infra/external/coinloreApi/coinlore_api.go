@@ -8,13 +8,13 @@ import (
 
 type Client struct{}
 
-func (c *Client) GetCoinsInfo() (map[string]domain.Coin, error) {
+func (c *Client) GetCoinsInfo() (map[string]domain.Coin, []string, error) {
 	var data domain.Coins
 
-	response, responseError := http.Get("https://api.coinlore.net/api/tickers/?start=0&limit=20")
+	response, responseError := http.Get("https://api.coinlore.net/api/tickers/?start=0&limit=27")
 
 	if responseError != nil {
-		return map[string]domain.Coin{}, responseError
+		return map[string]domain.Coin{}, []string{}, responseError
 	}
 
 	defer response.Body.Close()
@@ -26,16 +26,19 @@ func (c *Client) GetCoinsInfo() (map[string]domain.Coin, error) {
 	unmarshallingError := json.Unmarshal(byteSlice[:n], &data)
 
 	if unmarshallingError != nil {
-		return map[string]domain.Coin{}, unmarshallingError
+		return map[string]domain.Coin{}, []string{}, unmarshallingError
 	}
 
 	coins := data.Coins
+
+	symbolsList := make([]string, 0)
 
 	coinsMap := make(map[string]domain.Coin)
 
 	for _, coin := range coins {
 		coinsMap[coin.Symbol] = coin
+		symbolsList = append(symbolsList, coin.Symbol)
 	}
 
-	return coinsMap, nil
+	return coinsMap, symbolsList, nil
 }

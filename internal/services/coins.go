@@ -9,18 +9,28 @@ import (
 )
 
 func (s *Service) UpdateCoinsInfo() error {
-	coins, getError := s.Client.GetCoinsInfo()
+	coins, coinSymbols, getError := s.Client.GetCoinsInfo()
 	if getError != nil {
 		return getError
 	}
 
-	s.CoinsCache.SetCoins(coins)
+	s.CoinsCache.SetCoins(coins, coinSymbols)
 
 	return nil
 }
 
+func (s *Service) GetCoinsSymbols() ([]string, error) {
+	_, symbolsList, isOK := s.CoinsCache.GetCoins()
+
+	if !isOK {
+		return nil, errors.New("coin cache is empty")
+	}
+
+	return symbolsList, nil
+}
+
 func (s *Service) GetCoinInfo(symbol string) (domain.Coin, error) {
-	coins, isFound := s.CoinsCache.GetCoins()
+	coins, _, isFound := s.CoinsCache.GetCoins()
 
 	if !isFound {
 		return domain.Coin{}, errors.New("coin not found")
