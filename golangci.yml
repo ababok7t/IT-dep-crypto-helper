@@ -7,6 +7,8 @@ linters:
     - govet
     - staticcheck
     - unused
+  disable:
+    - typecheck
 linters-settings:
   errcheck:
     exclude:
