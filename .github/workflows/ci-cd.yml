@@ -36,7 +36,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/crypto-helper:latest .
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/crypto-helper:latest -f cmd/app/Dockerfile .
 
       - name: Push Docker image to Docker Hub
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/crypto-helper:latest
