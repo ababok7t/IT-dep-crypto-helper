@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Run tests
-        run: go test -race -vet=off ./...
+        run: go test -v ./...
 
       - name: Checkout code
         uses: actions/checkout@v3
