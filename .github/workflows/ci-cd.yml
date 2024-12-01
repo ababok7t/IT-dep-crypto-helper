@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -26,9 +28,6 @@ jobs:
 
       - name: Run tests
         run: go test ./...
-
-      - name: Build
-        run: go build -o crypto-helper
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
