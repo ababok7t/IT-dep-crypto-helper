@@ -29,14 +29,12 @@ func (sm *StateMachine) SetState(message string) string {
 		if message == "избранное" {
 			sm.currentState = StateCollection
 		}
-
 	case StateCoinsList:
 		if message == "назад" {
 			sm.currentState = StateMain
 		} else {
 			sm.currentState = StateCoinInfo
 		}
-
 	case StateCoinInfo:
 		if message == "назад" {
 			sm.currentState = StateCoinsList
@@ -49,31 +47,26 @@ func (sm *StateMachine) SetState(message string) string {
 				sm.currentState = StateAlert
 			}
 		}
-
 	case StateAlert:
 		if message != "" {
 			sm.currentState = StateSetAlert
 		}
-
 	case StateSetAlert:
 		{
 			if message == "далее" {
 				sm.currentState = StateCoinsList
 			}
 		}
-
 	case StateSetCollection:
 		if message == "далее" {
 			sm.currentState = StateCoinsList
 		}
-
 	case StateCollection:
 		if message == "назад" {
 			sm.currentState = StateMain
 		} else {
 			sm.currentState = StateCoinInfo
 		}
-
 	case StateRemoveCollection:
 		if message == "далее" {
 			sm.currentState = StateCoinsList
