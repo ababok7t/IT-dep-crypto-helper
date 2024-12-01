@@ -28,7 +28,6 @@ func (s *Service) HandleMessage(message tgbotapi.Message, currentCoin *string) t
 	default:
 		return tgbotapi.NewMessage(message.Chat.ID, "")
 	}
-
 }
 
 func (s *Service) HandleCallbackQuery(callback *tgbotapi.CallbackQuery, currentCoin *string) tgbotapi.MessageConfig {
@@ -41,9 +40,7 @@ func (s *Service) HandleCallbackQuery(callback *tgbotapi.CallbackQuery, currentC
 		reply = "Crypto Helper Bot\nВаш помощник в мире криптовалютных инвестиций"
 		messageConfig := s.setInlineKeyboard(callback.Message.Chat.ID, reply, []string{"перейти к списку монет", "избранное"})
 		return messageConfig
-
 	case StateCoinsList:
-
 		reply = "список всех монет:"
 
 		coinSymbols, symbolsGettingError := s.GetCoinsSymbols()
@@ -53,9 +50,7 @@ func (s *Service) HandleCallbackQuery(callback *tgbotapi.CallbackQuery, currentC
 
 		messageConfig := s.setCoinsKeyboard(callback.Message.Chat.ID, reply, coinSymbols)
 		return messageConfig
-
 	case StateCoinInfo:
-
 		coinSymbol := callback.Data
 		coinInfo, gettingSymbolError := s.GetCoinInfo(coinSymbol)
 		if gettingSymbolError != nil {
@@ -96,7 +91,6 @@ func (s *Service) HandleCallbackQuery(callback *tgbotapi.CallbackQuery, currentC
 		messageConfig := s.setCoinInfoKeyboard(callback.Message.Chat.ID, reply, buttonsMap)
 
 		return messageConfig
-
 	case StateCollection:
 		reply = "ваши избранные монеты:\n"
 
@@ -109,21 +103,18 @@ func (s *Service) HandleCallbackQuery(callback *tgbotapi.CallbackQuery, currentC
 
 		messageConfig := s.setCoinsKeyboard(callback.Message.Chat.ID, reply, coinSymbols)
 		return messageConfig
-
 	case StateSetCollection:
 		reply = fmt.Sprintf("Монета добавлена в избранное")
 
 		id := fmt.Sprint(callback.Message.From.ID)
 		s.SetCollectionItem(id, callback.Data[1:])
 		return s.setInlineKeyboard(callback.Message.Chat.ID, reply, []string{"далее"})
-
 	case StateRemoveCollection:
 		reply = fmt.Sprintf("Монета удалена из избранного")
 
 		id := fmt.Sprint(callback.Message.From.ID)
 		s.RemoveCollectionItem(id, callback.Data[1:])
 		return s.setInlineKeyboard(callback.Message.Chat.ID, reply, []string{"далее"})
-
 	case StateAlert:
 		currentCoin := callback.Data
 		reply = fmt.Sprintf("Введите значение %s:", currentCoin)
@@ -131,5 +122,4 @@ func (s *Service) HandleCallbackQuery(callback *tgbotapi.CallbackQuery, currentC
 	default:
 		return tgbotapi.NewMessage(callback.Message.Chat.ID, "")
 	}
-
 }

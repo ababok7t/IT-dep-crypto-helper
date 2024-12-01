@@ -7,45 +7,39 @@ import (
 )
 
 type UsersCache struct {
-	sync.RWMutex
+	mtx   sync.RWMutex
 	users map[string]domain.User
 }
 
 func NewUsersCache() *UsersCache {
-
 	return &UsersCache{
 		users: make(map[string]domain.User),
 	}
-
 }
 
 func (c *UsersCache) SetUser(user domain.User) {
-
-	c.Lock()
-	defer c.Unlock()
+	c.mtx.Lock()
+	defer c.mtx.Unlock()
 
 	c.users[user.UserId] = user
 }
 
 func (c *UsersCache) GetUser(userId string) (domain.User, bool) {
-
-	c.RLock()
-	defer c.RUnlock()
+	c.mtx.RLock()
+	defer c.mtx.RUnlock()
 
 	user, isFound := c.users[userId]
 	return user, isFound
 }
 
 func (c *UsersCache) GetAllUsers() map[string]domain.User {
-
-	c.RLock()
-	defer c.RUnlock()
+	c.mtx.RLock()
+	defer c.mtx.RUnlock()
 
 	return c.users
 }
 
 func (c *UsersCache) SetPriceAlert(userId string, alert domain.PriceAlert, ttl time.Duration) {
-
 	user, isFound := c.GetUser(userId)
 
 	if !isFound {
@@ -79,7 +73,6 @@ func (c *UsersCache) GetPriceAlert(userId string, coinSymbol string) (domain.Pri
 }
 
 func (c *UsersCache) DeletePriceAlert(userId string, coinSymbol string) {
-
 	user, isFound := c.GetUser(userId)
 
 	if !isFound {
@@ -98,7 +91,6 @@ func (c *UsersCache) DeletePriceAlert(userId string, coinSymbol string) {
 }
 
 func (c *UsersCache) SetCollectionItem(userId string, coin domain.Coin) {
-
 	user, isFound := c.GetUser(userId)
 	if !isFound {
 		user = domain.User{UserId: userId, PriceAlertsList: []domain.PriceAlert{}}

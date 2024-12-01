@@ -81,7 +81,6 @@ func NewHandler() *Handler {
 }
 
 func (h *Handler) HandleUpdate(update tgbotapi.Update) tgbotapi.MessageConfig {
-
 	if update.Message != nil {
 		messageConfig := h.service.HandleMessage(*update.Message, &currentCoin)
 		return messageConfig

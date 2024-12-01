@@ -10,4 +10,5 @@ type Service struct {
 	UsersCache   *cache.UsersCache
 	Client       *coinloreApi.Client
 	StateMachine *StateMachine
+	StatesCache  *cache.StatesCache
 }
